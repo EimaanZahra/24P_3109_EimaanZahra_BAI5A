@@ -1,0 +1,23 @@
+info:
+  name: UPDATE Workshop
+  type: http
+  seq: 3
+
+http:
+  method: PUT
+  url: http://127.0.0.1:5000/workshops/1
+  body:
+    type: json
+    data: |-
+      {
+        "title": "Windows Setup Workshop",
+        "status": "Completed"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
