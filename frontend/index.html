@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workshop Tracker</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+        .workshop-item { display: flex; justify-content: space-between; margin-bottom: 10px; padding: 10px; background: #f4f4f4; border-radius: 5px; }
+        button { cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <h2>Workshop Tracker</h2>
+    
+    <div>
+        <input type="text" id="workshopTitle" placeholder="Enter workshop title..." required>
+        <button onclick="createWorkshop()">Add Workshop</button>
+    </div>
+
+    <div id="workshopList" style="margin-top: 20px;"></div>
+
+    <script>
+        const API_URL = 'http://127.0.0.1:5000/workshops';
+
+        // Fetch and display all workshops
+        async function loadWorkshops() {
+            const response = await fetch(API_URL);
+            const workshops = await response.json();
+            const list = document.getElementById('workshopList');
+            list.innerHTML = '';
+            
+            workshops.forEach(workshop => {
+                const item = document.createElement('div');
+                item.className = 'workshop-item';
+                item.innerHTML = `
+                    <span><strong>${workshop.title}</strong> (${workshop.status})</span>
+                    <button onclick="deleteWorkshop(${workshop.id})">Delete</button>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        // Create a new workshop
+        async function createWorkshop() {
+            const titleInput = document.getElementById('workshopTitle');
+            if (!titleInput.value) return alert("Please enter a title");
+
+            await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title: titleInput.value })
+            });
+
+            titleInput.value = '';
+            loadWorkshops(); // Reload the list
+        }
+
+        // Delete a workshop
+        async function deleteWorkshop(id) {
+            await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+            loadWorkshops(); // Reload the list
+        }
+
+        // Load workshops as soon as the page opens
+        loadWorkshops();
+    </script>
+</body>
+</html>
